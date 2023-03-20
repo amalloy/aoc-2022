@@ -40,14 +40,34 @@ fun main() {
         val (left, right) = match.destructured
         Strategy(Left.valueOf(left), Right.valueOf(right))
     }
-    print("Part 1: ${part1(guide)}")
-
+    println("Part 1: ${part1(guide)}")
+    println("Part 2: ${part2(guide)}")
 }
 
+val left = mapOf(Left.A to Shape.ROCK, Left.B to Shape.PAPER, Left.C to Shape.SCISSORS)
+
 fun part1(guide: List<Strategy>): Int {
-    val left = mapOf(Left.A to Shape.ROCK, Left.B to Shape.PAPER, Left.C to Shape.SCISSORS)
     val right = mapOf(Right.X to Shape.ROCK, Right.Y to Shape.PAPER, Right.Z to Shape.SCISSORS)
     return guide.asSequence().map {
         scoreForP2(left.getValue(it.left), right.getValue(it.right))
     }.sum()
 }
+
+fun part2(guide: List<Strategy>): Int {
+    fun solve(p1: Shape, goal: Outcome): Shape {
+        for (shape in Shape.values()) {
+            if (outcomeForP2(p1, shape) == goal) {
+                return shape
+            }
+        }
+        throw RuntimeException("Impossible to $goal against $p1")
+    }
+    val right = mapOf(Right.X to Outcome.LOSE, Right.Y to Outcome.DRAW, Right.Z to Outcome.WIN)
+    return guide.asSequence().map {
+        val p1 = left.getValue(it.left)
+        val goal = right.getValue(it.right)
+        scoreForP2(p1, solve(p1, goal))
+    }.sum()
+}
+
+
