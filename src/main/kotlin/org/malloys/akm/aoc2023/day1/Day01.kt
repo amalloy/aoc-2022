@@ -1,6 +1,7 @@
 package org.malloys.akm.aoc2023.day1
 
 import com.google.common.collect.Comparators
+import org.malloys.akm.aoc2023.lib.readInput
 
 data class Elf(val inventory: List<Int>)
 
@@ -10,7 +11,6 @@ fun main() {
     println("Part 1: ${part1(elves)}")
     println("Part 2: ${part2(elves)}")
 }
-
 
 fun part1(elves: List<Elf>): Int = elves.asSequence().map { it.inventory.sum() }.max()
 
@@ -38,6 +38,3 @@ private fun parseElves(inputLines: Iterator<String>): List<Elf> {
     }
     return elves
 }
-
-
-private fun readInput(day: Int) = object {}.javaClass.getResource("/day$day.txt").readText().lines()
