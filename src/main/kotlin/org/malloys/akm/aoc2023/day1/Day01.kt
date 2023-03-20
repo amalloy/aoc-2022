@@ -1,13 +1,13 @@
 package org.malloys.akm.aoc2023.day1
 
 import com.google.common.collect.Comparators
+import org.malloys.akm.aoc2023.lib.groupsAcrossBlankLines
 import org.malloys.akm.aoc2023.lib.readInput
 
 data class Elf(val inventory: List<Int>)
 
 fun main() {
-    val inputLines = readInput(1).iterator()
-    val elves = parseElves(inputLines)
+    val elves = parseElves(readInput(1).groupsAcrossBlankLines())
     println("Part 1: ${part1(elves)}")
     println("Part 2: ${part2(elves)}")
 }
@@ -19,22 +19,5 @@ fun part2(elves: List<Elf>): Int =
         .collect(Comparators.greatest(3, naturalOrder()))
         .sum()
 
-private fun parseElves(inputLines: Iterator<String>): List<Elf> {
-    val elves = buildList {
-        fun nextElf(): Elf = Elf(generateSequence {
-            val line: String = if (inputLines.hasNext()) {
-                inputLines.next()
-            } else {
-                ""
-            }
-            if (line.isEmpty()) {
-                return@generateSequence null
-            }
-            line.toInt()
-        }.toList())
-        while (inputLines.hasNext()) {
-            add(nextElf())
-        }
-    }
-    return elves
-}
+private fun parseElves(inputLines: List<List<String>>): List<Elf> =
+    inputLines.map { lines -> Elf(lines.map(String::toInt)) }
