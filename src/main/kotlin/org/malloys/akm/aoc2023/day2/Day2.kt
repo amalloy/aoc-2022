@@ -40,6 +40,14 @@ fun main() {
         val (left, right) = match.destructured
         Strategy(Left.valueOf(left), Right.valueOf(right))
     }
-    print(guide)
+    print("Part 1: ${part1(guide)}")
 
+}
+
+fun part1(guide: List<Strategy>): Int {
+    val left = mapOf(Left.A to Shape.ROCK, Left.B to Shape.PAPER, Left.C to Shape.SCISSORS)
+    val right = mapOf(Right.X to Shape.ROCK, Right.Y to Shape.PAPER, Right.Z to Shape.SCISSORS)
+    return guide.asSequence().map {
+        scoreForP2(left.getValue(it.left), right.getValue(it.right))
+    }.sum()
 }
