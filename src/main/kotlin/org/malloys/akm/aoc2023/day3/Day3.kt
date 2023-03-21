@@ -1,6 +1,7 @@
 package org.malloys.akm.aoc2023.day3
 
 import com.google.common.collect.ImmutableMultiset
+import com.google.common.collect.ImmutableMultiset.toImmutableMultiset
 import com.google.common.collect.Iterables
 import com.google.common.collect.Multiset
 import com.google.common.collect.Multisets
@@ -18,13 +19,7 @@ data class Rucksack(val left: ImmutableMultiset<ItemType>, val right: ImmutableM
     val overlap: Set<Multiset.Entry<ItemType>> = Multisets.intersection(left, right).entrySet()
 }
 
-fun String.toMultiSet(): ImmutableMultiset<ItemType> {
-    val builder = ImmutableMultiset.Builder<ItemType>()
-    for (x in chars()) {
-        builder.add(ItemType(x!!.toChar()))
-    }
-    return builder.build()
-}
+fun String.toMultiSet() = chars().mapToObj { ItemType(it.toChar()) }.collect(toImmutableMultiset())
 
 fun String.toRucksack(): Rucksack {
     val size = length / 2
@@ -43,9 +38,8 @@ fun part1(rucksacks: List<Rucksack>): Int {
     }
 }
 
-fun part2(rucksacks: List<Rucksack>): Int =
-    rucksacks.chunked(3).sumOf { group ->
-        val contents = group.stream().map { it.left.elementSet().union(it.right.elementSet()) }
-        val commonType = contents.reduce(Set<ItemType>::intersect).orElseThrow()
-        Iterables.getOnlyElement(commonType).priority
-    }
+fun part2(rucksacks: List<Rucksack>): Int = rucksacks.chunked(3).sumOf { group ->
+    val contents = group.stream().map { it.left.elementSet().union(it.right.elementSet()) }
+    val commonType = contents.reduce(Set<ItemType>::intersect).orElseThrow()
+    Iterables.getOnlyElement(commonType).priority
+}
