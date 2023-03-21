@@ -45,7 +45,7 @@ fun part1(rucksacks: List<Rucksack>): Int {
 
 fun part2(rucksacks: List<Rucksack>): Int =
     rucksacks.chunked(3).sumOf { group ->
-        val contents = group.stream().map { it.left.elementSet().union(it.right.elementSet()) }.toList()
-        val commonType = contents[0].intersect(contents[1]).intersect(contents[2])
+        val contents = group.stream().map { it.left.elementSet().union(it.right.elementSet()) }
+        val commonType = contents.reduce(Set<ItemType>::intersect).orElseThrow()
         Iterables.getOnlyElement(commonType).priority
     }
