@@ -14,22 +14,26 @@ fun main() {
     println("Part 2: ${part2(input)}")
 }
 
-fun part1(input: Input): String {
+fun runCrane(input: Input, applyMove: (move: Move, List<Stack>) -> Unit): String {
     val stacks = input.stacks.map { it.clone() }
-    for ((quantity, source, destination) in input.moves) {
-        repeat(quantity) {stacks[source - 1].pollLast().let { stacks[destination - 1].addLast(it) }}
+    for (move in input.moves) {
+        applyMove(move, stacks)
     }
     return stacks.map { it.pollLast() }.joinToString(separator = "")
 }
 
-fun part2(input: Input): String {
-    val stacks = input.stacks.map { it.clone() }
-    val buffer = Stack(ArrayDeque())
-    for ((quantity, source, destination) in input.moves) {
-        repeat(quantity) {stacks[source - 1].pollLast().let { buffer.addLast(it) }}
-        repeat(quantity) {buffer.pollLast().let { stacks[destination - 1].addLast(it) }}
+fun part1(input: Input): String {
+    return runCrane(input) { (quantity, source, destination), stacks ->
+        repeat(quantity) { stacks[source - 1].pollLast().let { stacks[destination - 1].addLast(it) } }
     }
-    return stacks.map { it.pollLast() }.joinToString(separator = "")
+}
+
+fun part2(input: Input): String {
+    return runCrane(input) { (quantity, source, destination), stacks ->
+        val buffer = Stack(ArrayDeque(quantity))
+        repeat(quantity) { stacks[source - 1].pollLast().let { buffer.addLast(it) } }
+        repeat(quantity) { buffer.pollLast().let { stacks[destination - 1].addLast(it) } }
+    }
 }
 
 fun parse(input: List<String>) = Input(parseStacks(input), parseMoves(input))
