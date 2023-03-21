@@ -1,6 +1,7 @@
 package org.malloys.akm.aoc2023.day3
 
 import com.google.common.collect.ImmutableMultiset
+import com.google.common.collect.Iterables
 import com.google.common.collect.Multiset
 import com.google.common.collect.Multisets
 import org.malloys.akm.aoc2023.lib.readInput
@@ -33,6 +34,7 @@ fun String.toRucksack(): Rucksack {
 fun main() {
     val rucksacks = readInput(3).map { it.toRucksack() }
     println("Part 1: ${part1(rucksacks)}")
+    println("Part 2: ${part2(rucksacks)}")
 }
 
 fun part1(rucksacks: List<Rucksack>): Int {
@@ -40,3 +42,10 @@ fun part1(rucksacks: List<Rucksack>): Int {
         it.overlap.stream().findAny().orElseThrow { RuntimeException(it.toString()) }.element.priority
     }
 }
+
+fun part2(rucksacks: List<Rucksack>): Int =
+    rucksacks.chunked(3).sumOf { group ->
+        val contents = group.stream().map { it.left.elementSet().union(it.right.elementSet()) }.toList()
+        val commonType = contents[0].intersect(contents[1]).intersect(contents[2])
+        Iterables.getOnlyElement(commonType).priority
+    }
