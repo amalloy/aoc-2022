@@ -11,12 +11,23 @@ data class Input(val stacks: List<Stack>, val moves: List<Move>)
 fun main() {
     val input = parse(readInput(5))
     println("Part 1: ${part1(input)}")
+    println("Part 2: ${part2(input)}")
 }
 
 fun part1(input: Input): String {
     val stacks = input.stacks.map { it.clone() }
     for ((quantity, source, destination) in input.moves) {
         repeat(quantity) {stacks[source - 1].pollLast().let { stacks[destination - 1].addLast(it) }}
+    }
+    return stacks.map { it.pollLast() }.joinToString(separator = "")
+}
+
+fun part2(input: Input): String {
+    val stacks = input.stacks.map { it.clone() }
+    val buffer = Stack(ArrayDeque())
+    for ((quantity, source, destination) in input.moves) {
+        repeat(quantity) {stacks[source - 1].pollLast().let { buffer.addLast(it) }}
+        repeat(quantity) {buffer.pollLast().let { stacks[destination - 1].addLast(it) }}
     }
     return stacks.map { it.pollLast() }.joinToString(separator = "")
 }
