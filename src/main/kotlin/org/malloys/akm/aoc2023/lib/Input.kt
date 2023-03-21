@@ -8,18 +8,17 @@ fun readInput(day: Int): List<String> {
 
 fun List<String>.groupsAcrossBlankLines(): List<List<String>> {
     val iter = iterator()
+    fun chunk(): List<String> = generateSequence {
+        val line = if (iter.hasNext()) {
+            iter.next()
+        } else {
+            ""
+        }
+        line.ifEmpty {
+            null
+        }
+    }.toList()
     return buildList {
-        fun chunk(): List<String> = generateSequence {
-            val line: String = if (iter.hasNext()) {
-                iter.next()
-            } else {
-                ""
-            }
-            if (line.isEmpty()) {
-                return@generateSequence null
-            }
-            line
-        }.toList()
         while (iter.hasNext()) {
             add(chunk())
         }
