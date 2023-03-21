@@ -6,7 +6,7 @@ fun readInput(day: Int): List<String> {
     return resource.readText().lines()
 }
 
-fun List<String>.groupsAcrossBlankLines(): List<List<String>> {
+fun List<String>.splitAtBlankLines(): List<List<String>> {
     val iter = iterator()
     fun chunk(): List<String> = generateSequence {
         val line = if (iter.hasNext()) {
