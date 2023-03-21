@@ -1,6 +1,7 @@
 package org.malloys.akm.aoc2023.day5
 
 import org.malloys.akm.aoc2023.lib.readInput
+import java.util.ArrayDeque as ArrayDeque
 
 typealias Stack = ArrayDeque<Char>
 
@@ -9,7 +10,15 @@ data class Input(val stacks: List<Stack>, val moves: List<Move>)
 
 fun main() {
     val input = parse(readInput(5))
-    println(input)
+    println("Part 1: ${part1(input)}")
+}
+
+fun part1(input: Input): String {
+    val stacks = input.stacks.map { it.clone() }
+    for ((quantity, source, destination) in input.moves) {
+        repeat(quantity) {stacks[source - 1].pollLast().let { stacks[destination - 1].addLast(it) }}
+    }
+    return stacks.map { it.pollLast() }.joinToString(separator = "")
 }
 
 fun parse(input: List<String>) = Input(parseStacks(input), parseMoves(input))
