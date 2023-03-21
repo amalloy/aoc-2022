@@ -19,7 +19,8 @@ data class Rucksack(val left: ImmutableMultiset<ItemType>, val right: ImmutableM
     val overlap: Set<Multiset.Entry<ItemType>> = Multisets.intersection(left, right).entrySet()
 }
 
-fun String.toMultiSet() = chars().mapToObj { ItemType(it.toChar()) }.collect(toImmutableMultiset())
+fun String.toMultiSet(): ImmutableMultiset<ItemType> =
+    chars().mapToObj { ItemType(it.toChar()) }.collect(toImmutableMultiset())
 
 fun String.toRucksack(): Rucksack {
     val size = length / 2
