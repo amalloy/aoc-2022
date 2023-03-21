@@ -14,7 +14,11 @@ fun main() {
     }
 
     println("Part 1: ${part1(assignments)}")
+    println("Part 2: ${part2(assignments)}")
 }
 
 fun part1(assignments: List<Assignment>): Int =
     assignments.count { it.first.encloses(it.second) || it.second.encloses(it.first) }
+
+fun part2(assignments: List<Assignment>): Int =
+    assignments.count { it.first.isConnected(it.second) }
