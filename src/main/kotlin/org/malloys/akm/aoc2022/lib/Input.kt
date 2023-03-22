@@ -1,14 +1,14 @@
-package org.malloys.akm.aoc2023.lib
+package org.malloys.akm.aoc2022.lib
 
-fun readInput(day: Int): List<String> {
+fun readInput(day : Int) : List<String> {
     val path = "/day$day.txt"
     val resource = object {}.javaClass.getResource(path) ?: throw RuntimeException("No resource at $path")
     return resource.readText().lines()
 }
 
-fun List<String>.splitAtBlankLines(): List<List<String>> {
+fun List<String>.splitAtBlankLines() : List<List<String>> {
     val iter = iterator()
-    fun chunk(): List<String> = generateSequence {
+    fun chunk() : List<String> = generateSequence {
         val line = if (iter.hasNext()) {
             iter.next()
         } else {

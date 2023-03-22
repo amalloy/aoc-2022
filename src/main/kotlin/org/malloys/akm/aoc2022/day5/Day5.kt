@@ -1,6 +1,6 @@
-package org.malloys.akm.aoc2023.day5
+package org.malloys.akm.aoc2022.day5
 
-import org.malloys.akm.aoc2023.lib.readInput
+import org.malloys.akm.aoc2022.lib.readInput
 import java.util.ArrayDeque
 import java.util.stream.Collectors.joining
 
