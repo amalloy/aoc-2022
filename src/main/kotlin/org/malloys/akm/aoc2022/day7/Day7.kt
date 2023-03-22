@@ -78,9 +78,21 @@ fun buildTree(transcript : List<TranscriptEntry>) : DirectoryObject {
 
 fun main() {
     val tree = readInput(7).map {parse(it)}.let {buildTree(it)}
+    println("Booted up. ${tree.totalSize} bytes accounted for.")
     println("Part 1: ${part1(tree)}")
+    println("Part 2: ${part2(tree)}")
 }
 
 fun part1(tree : DirectoryObject) : Int {
     return tree.descendants().filter {it.totalSize <= 100000}.sumOf {it.totalSize}
+}
+
+const val TOTAL_SPACE = 70000000
+const val SPACE_NEEDED = 30000000
+
+fun part2(tree : DirectoryObject) : Int {
+    val spaceFree = TOTAL_SPACE - tree.totalSize
+    val deletionSizeNeeded = SPACE_NEEDED - spaceFree
+    println("$spaceFree free, $deletionSizeNeeded to be deleted")
+    return tree.descendants().filter {it.totalSize >= deletionSizeNeeded}.minOf {it.totalSize}
 }
