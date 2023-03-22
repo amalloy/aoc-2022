@@ -9,6 +9,7 @@ fun main() {
     val packets = readInput(6)[0]
     println("Size: ${packets.length}")
     println("Part 1: ${startOffset(packets, 4)}")
+    println("Part 2: ${startOffset(packets, 14)}")
 }
 
 fun startOffset(packets : String, syncPacketSize : Int) : Int {
