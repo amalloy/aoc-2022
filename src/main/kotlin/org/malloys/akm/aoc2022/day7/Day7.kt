@@ -57,14 +57,14 @@ fun buildTree(transcript : List<TranscriptEntry>) : DirectoryObject {
             is Cd ->
                 cwd = when (entry.dir) {
                     ".." -> cwd.parent ?: throw RuntimeException("No parent for ${cwd.name}")
-                    else -> (cwd.children.get(entry.dir) as? DirectoryObject) ?: run {
+                    else -> (cwd.children[entry.dir] as? DirectoryObject) ?: run {
                         DirectoryObject(entry.dir, cwd).also {
-                            cwd.children.put(entry.dir, it)
+                            cwd.children[entry.dir] = it
                         }
                     }
                 }
 
-            is FileListing -> cwd.children.put(entry.name, FileObject(entry.name, cwd, entry.size))
+            is FileListing -> cwd.children[entry.name] = FileObject(entry.name, cwd, entry.size)
             is DirListing -> {}
             is Ls -> {}
         }
