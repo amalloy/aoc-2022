@@ -24,6 +24,7 @@ enum class ScanPlan(val startPos : Coordinate, val scanDir : Direction, val done
 data class Forest(val trees : List<List<Int>>) {
     val height = trees.size
     val width = trees[0].size
+    operator fun get(coord : Coordinate) : Int = with(coord) {trees[y][x]}
 }
 
 fun main() {
@@ -34,22 +35,20 @@ fun main() {
     println("Part 2: ${part2(forest)}")
 }
 
-fun scanWhileValid(forest : Forest, start : Coordinate, dir : Direction) : Sequence<Coordinate> =
-    with(forest) {
-        val xBounds = 0 until width
-        val yBounds = 0 until height
-        generateSequence(start) {(it + dir).takeIf {(x, y) -> x in xBounds && y in yBounds}}
+fun scanWhileValid(forest : Forest, start : Coordinate, dir : Direction) : Sequence<Coordinate> {
+    val xBounds = 0 until forest.width
+    val yBounds = 0 until forest.height
+    return generateSequence(start) {(it + dir).takeIf {(x, y) -> x in xBounds && y in yBounds}}
+}
+
+fun scanOrder(forest : Forest, plan : ScanPlan) : Sequence<Sequence<Coordinate>> {
+    val startPos = with(plan.startPos) {
+        Coordinate(x = x * (forest.width - 1), y = y * (forest.height - 1))
     }
 
-fun scanOrder(forest : Forest, plan : ScanPlan) : Sequence<Sequence<Coordinate>> =
-    with(forest) {
-        val startPos = with(plan.startPos) {
-            Coordinate(x = x * (width - 1), y = y * (height - 1))
-        }
-
-        val rowStarts = scanWhileValid(forest, startPos, plan.doneDir)
-        rowStarts.map {scanWhileValid(forest, it, plan.scanDir)}
-    }
+    val rowStarts = scanWhileValid(forest, startPos, plan.doneDir)
+    return rowStarts.map {scanWhileValid(forest, it, plan.scanDir)}
+}
 
 fun part1(forest : Forest) : Int {
     val visibles = ImmutableSet.builder<Coordinate>()
@@ -59,12 +58,10 @@ fun part1(forest : Forest) : Int {
     for (scan in scans) {
         var height = -1
         for (coordinate in scan) {
-            with(coordinate) {
-                val newHeight = forest.trees[y][x]
-                if (newHeight > height) {
-                    height = newHeight
-                    visibles.add(coordinate)
-                }
+            val newHeight = forest[coordinate]
+            if (newHeight > height) {
+                height = newHeight
+                visibles.add(coordinate)
             }
         }
     }
@@ -82,13 +79,12 @@ fun part2(forest : Forest) : Int {
 }
 
 fun directedScenicScore(dir : Direction, start : Coordinate, forest : Forest) : Int {
-    fun lookup(coord : Coordinate) : Int = forest.trees[coord.y][coord.x]
-    val height = lookup(start)
+    val height = forest[start]
     val coords = scanWhileValid(forest, start, dir)
     var count = 0
     for (coord in coords.drop(1)) {
         count++
-        if (lookup(coord) >= height) {
+        if (forest[coord] >= height) {
             break
         }
     }
