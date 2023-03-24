@@ -36,9 +36,8 @@ fun scoreForP2(p1 : Shape, p2 : Shape) : Int = outcomeForP2(p1, p2).score + p2.s
 fun main() {
     val regex = Regex("([ABC]) ([XYZ])")
     val guide = readInput(2).map {
-        val match = regex.matchEntire(it) ?: throw RuntimeException("Bad input: $it")
-        val (left, right) = match.destructured
-        Strategy(Left.valueOf(left), Right.valueOf(right))
+        regex.matchEntire(it)?.destructured?.let {(left, right) -> Strategy(Left.valueOf(left), Right.valueOf(right))}
+            ?: throw RuntimeException("Bad input: $it")
     }
     println("Part 1: ${part1(guide)}")
     println("Part 2: ${part2(guide)}")

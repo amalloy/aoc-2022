@@ -61,8 +61,7 @@ fun parseRow(row : String) : List<Pair<Int, Char>> {
 fun parseMoves(input : List<String>) : List<Move> {
     val move = Regex("""move (\d+) from (\d) to (\d)""")
     return input.flatMap {line ->
-        move.matchEntire(line)?.let {match ->
-            val (quantity, source, destination) = match.destructured
+        move.matchEntire(line)?.destructured?.let {(quantity, source, destination) ->
             listOf(Move(quantity.toInt(), source.toInt(), destination.toInt()))
         } ?: emptyList()
     }

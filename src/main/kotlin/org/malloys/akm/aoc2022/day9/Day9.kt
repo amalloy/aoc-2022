@@ -17,8 +17,7 @@ data class Motion(val direction : Direction, val magnitude : Int) {
 
 val motion = Regex("""([LURD]) (\d+)""")
 fun parse(line : String) : Motion {
-    return motion.matchEntire(line)?.let {match ->
-        val (dir, mag) = match.destructured
+    return motion.matchEntire(line)?.destructured?.let {(dir, mag) ->
         Motion(
             when (dir) {
                 "L" -> Direction.WEST
