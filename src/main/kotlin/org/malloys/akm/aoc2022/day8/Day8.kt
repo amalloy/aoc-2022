@@ -42,10 +42,7 @@ fun scanWhileValid(forest : Forest, start : Coordinate, dir : Direction) : Seque
 }
 
 fun scanOrder(forest : Forest, plan : ScanPlan) : Sequence<Sequence<Coordinate>> {
-    val startPos = with(plan.startPos) {
-        Coordinate(x = x * (forest.width - 1), y = y * (forest.height - 1))
-    }
-
+    val startPos = Coordinate(x = plan.startPos.x * (forest.width - 1), y = plan.startPos.y * (forest.height - 1))
     val rowStarts = scanWhileValid(forest, startPos, plan.doneDir)
     return rowStarts.map {scanWhileValid(forest, it, plan.scanDir)}
 }
@@ -69,9 +66,7 @@ fun part1(forest : Forest) : Int {
 }
 
 fun part2(forest : Forest) : Int {
-    val allCoords = with(forest) {
-        (0 until height).flatMap {y -> (0 until width).map {x -> Coordinate(x, y)}}
-    }
+    val allCoords = (0 until forest.height).flatMap {y -> (0 until forest.width).map {x -> Coordinate(x, y)}}
 
     return allCoords.maxOf {coord ->
         Direction.values().asSequence().map {directedScenicScore(it, coord, forest)}.reduce(Int::times)
