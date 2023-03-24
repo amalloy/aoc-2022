@@ -1,6 +1,6 @@
 package org.malloys.akm.aoc2022.day9
 
-import com.google.common.collect.ImmutableMultiset
+import com.google.common.collect.ImmutableSet
 import org.malloys.akm.aoc2022.lib.Coordinate
 import org.malloys.akm.aoc2022.lib.Direction
 import org.malloys.akm.aoc2022.lib.readInput
@@ -14,8 +14,6 @@ fun Coordinate.clampMagnitudesTo(limit : Int) = Coordinate(x.sign * limit, y.sig
 data class Motion(val direction : Direction, val magnitude : Int) {
     val asSequenceOfSteps = (0 until magnitude).asSequence().map {direction}
 }
-
-data class Rope(val head : Coordinate, val tail : Coordinate)
 
 val motion = Regex("""([LURD]) (\d+)""")
 fun parse(line : String) : Motion {
@@ -35,25 +33,27 @@ fun parse(line : String) : Motion {
 
 fun main() {
     val path : List<Motion> = readInput(9).map {parse(it)}
-    println("Part 1: ${part1(path)}")
+    println("Part 1: ${simulateRope(1, path)}")
+    println("Part 2: ${simulateRope(9, path)}")
 }
 
-fun part1(path : List<Motion>) : Int {
-    val ropeLength = 1
-    val origin = Coordinate(0, 0)
-    var rope = Rope(origin, origin)
-    val coordinatesVisitedByTail = ImmutableMultiset.builder<Coordinate>().add(origin)
+const val ROPE_LENGTH = 1
+val origin = Coordinate(0, 0)
+fun simulateRope(numKnots : Int, path : List<Motion>) : Int {
+    val coordinatesVisitedByTail = ImmutableSet.builder<Coordinate>().add(origin)
+    var head = origin
+    var knots = (0 until numKnots).map {origin}
     for (dir in path.asSequence().flatMap {it.asSequenceOfSteps}) {
-        val newHead = rope.head + dir
-        val delta = newHead - rope.tail
-        val newTail = if (delta.maxMagnitude() <= ropeLength) {
-            rope.tail
-        } else {
-            (rope.tail + delta.clampMagnitudesTo(ropeLength)).also {
-                coordinatesVisitedByTail.add(it)
+        head += dir
+        knots = knots.asSequence().scan(head) {h, t ->
+            val delta = h - t
+            if (delta.maxMagnitude() <= ROPE_LENGTH) {
+                t
+            } else {
+                t + delta.clampMagnitudesTo(ROPE_LENGTH)
             }
-        }
-        rope = Rope(newHead, newTail)
+        }.drop(1).toList()
+        coordinatesVisitedByTail.add(knots.last())
     }
-    return coordinatesVisitedByTail.build().entrySet().size
+    return coordinatesVisitedByTail.build().size
 }
