@@ -3,10 +3,10 @@ package org.malloys.akm.aoc2022.day7
 import org.malloys.akm.aoc2022.lib.readInput
 
 sealed interface TranscriptEntry
-class Ls : TranscriptEntry
+object Ls : TranscriptEntry
 data class Cd(val dir : String) : TranscriptEntry
 data class FileListing(val size : Int, val name : String) : TranscriptEntry
-class DirListing : TranscriptEntry
+object DirListing : TranscriptEntry
 
 sealed class FilesystemObject(val name : String, val parent : DirectoryObject?) {
     abstract val totalSize : Int
@@ -41,8 +41,8 @@ private val DIR = Regex("""dir ([\w+.]+)""")
 private val FILE = Regex("""(\d+) ([\w.]+)""")
 fun parse(entry : String) : TranscriptEntry {
     return CD.matchEntire(entry)?.let {Cd(it.groups[1]!!.value)}
-        ?: LS.matchEntire(entry)?.let {Ls()}
-        ?: DIR.matchEntire(entry)?.let {DirListing()}
+        ?: LS.matchEntire(entry)?.let {Ls}
+        ?: DIR.matchEntire(entry)?.let {DirListing}
         ?: FILE.matchEntire(entry)?.let {FileListing(it.groups[1]!!.value.toInt(), it.groups[2]!!.value)}
         ?: throw RuntimeException("Can't parse $entry")
 }
