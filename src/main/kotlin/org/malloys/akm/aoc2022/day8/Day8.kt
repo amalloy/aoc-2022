@@ -1,18 +1,9 @@
 package org.malloys.akm.aoc2022.day8
 
 import com.google.common.collect.ImmutableSet
+import org.malloys.akm.aoc2022.lib.Coordinate
+import org.malloys.akm.aoc2022.lib.Direction
 import org.malloys.akm.aoc2022.lib.readInput
-
-data class Coordinate(val x : Int, val y : Int) {
-    operator fun plus(dir : Direction) : Coordinate = with(dir) {Coordinate(x = x + dx, y = y + dy)}
-}
-
-enum class Direction(val dx : Int, val dy : Int) {
-    NORTH(dx = 0, dy = -1),
-    EAST(dx = 1, dy = 0),
-    SOUTH(dx = 0, dy = 1),
-    WEST(dx = -1, dy = 0),
-}
 
 enum class ScanPlan(val startPos : Coordinate, val scanDir : Direction, val doneDir : Direction) {
     N_TO_S(startPos = Coordinate(0, 0), scanDir = Direction.SOUTH, doneDir = Direction.EAST),
