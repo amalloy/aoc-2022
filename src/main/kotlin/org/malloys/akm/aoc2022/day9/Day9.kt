@@ -12,7 +12,7 @@ fun Coordinate.maxMagnitude() = max(abs(x), abs(y))
 fun Coordinate.clampMagnitudesTo(limit : Int) = Coordinate(x.sign * limit, y.sign * limit)
 
 data class Motion(val direction : Direction, val magnitude : Int) {
-    val asSequenceOfSteps = (0 until magnitude).asSequence().map {direction}
+    val asSequenceOfSteps = List(magnitude) {direction}.asSequence()
 }
 
 val motion = Regex("""([LURD]) (\d+)""")
@@ -42,7 +42,7 @@ val origin = Coordinate(0, 0)
 fun simulateRope(numKnots : Int, path : List<Motion>) : Int {
     val coordinatesVisitedByTail = ImmutableSet.builder<Coordinate>().add(origin)
     var head = origin
-    var knots = (0 until numKnots).map {origin}
+    var knots = List(numKnots) {origin}
     for (dir in path.asSequence().flatMap {it.asSequenceOfSteps}) {
         head += dir
         knots = knots.asSequence().scan(head) {h, t ->
