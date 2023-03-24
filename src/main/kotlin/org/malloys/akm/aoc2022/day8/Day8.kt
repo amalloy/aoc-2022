@@ -22,8 +22,8 @@ enum class ScanPlan(val startPos : Coordinate, val scanDir : Direction, val done
 }
 
 data class Forest(val trees : List<List<Int>>) {
-    val height = trees.size
-    val width = trees[0].size
+    val yBounds = trees.indices
+    val xBounds = trees[0].indices
     operator fun get(coord : Coordinate) : Int = with(coord) {trees[y][x]}
 }
 
@@ -36,13 +36,11 @@ fun main() {
 }
 
 fun scanWhileValid(forest : Forest, start : Coordinate, dir : Direction) : Sequence<Coordinate> {
-    val xBounds = 0 until forest.width
-    val yBounds = 0 until forest.height
-    return generateSequence(start) {(it + dir).takeIf {(x, y) -> x in xBounds && y in yBounds}}
+    return generateSequence(start) {(it + dir).takeIf {(x, y) -> x in forest.xBounds && y in forest.yBounds}}
 }
 
 fun scanOrder(forest : Forest, plan : ScanPlan) : Sequence<Sequence<Coordinate>> {
-    val startPos = Coordinate(x = plan.startPos.x * (forest.width - 1), y = plan.startPos.y * (forest.height - 1))
+    val startPos = Coordinate(x = plan.startPos.x * forest.xBounds.last, y = plan.startPos.y * forest.yBounds.last)
     val rowStarts = scanWhileValid(forest, startPos, plan.doneDir)
     return rowStarts.map {scanWhileValid(forest, it, plan.scanDir)}
 }
@@ -66,8 +64,7 @@ fun part1(forest : Forest) : Int {
 }
 
 fun part2(forest : Forest) : Int {
-    val allCoords = (0 until forest.height).flatMap {y -> (0 until forest.width).map {x -> Coordinate(x, y)}}
-
+    val allCoords = forest.yBounds.flatMap {y -> forest.xBounds.map {x -> Coordinate(x, y)}}
     return allCoords.maxOf {coord ->
         Direction.values().asSequence().map {directedScenicScore(it, coord, forest)}.reduce(Int::times)
     }
