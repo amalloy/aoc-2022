@@ -39,8 +39,8 @@ fun parseMonkey(lines : List<String>) : Monkey {
         parseItems(lines[1].trimIndent()),
         parseOperation(lines[2].trimIndent()),
         parseFactor(lines[3].trimIndent()),
-        parseIfTrue(lines[4].trimIndent()),
-        parseIfFalse(lines[5].trimIndent()),
+        parseCond("true", lines[4].trimIndent()),
+        parseCond("false", lines[5].trimIndent()),
     )
 }
 
@@ -78,10 +78,6 @@ fun parseCond(cond : String, s : String) : MonkeyIndex {
         n.toInt().takeIf {b == cond}
     } ?: throw RuntimeException("No parse: $s")
 }
-
-fun parseIfTrue(s : String) = parseCond("true", s)
-
-fun parseIfFalse(s : String) = parseCond("false", s)
 
 fun main() {
     val monkeys = readInput(11).chunked(7).map {parseMonkey(it)}
