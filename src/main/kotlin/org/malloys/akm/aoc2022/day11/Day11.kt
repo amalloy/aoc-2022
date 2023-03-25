@@ -51,8 +51,8 @@ fun parseItems(s : String) : ArrayDeque<Item> =
     } ?: throw RuntimeException("No parse: $s")
 
 val OPERATION = Regex("""Operation: new = old (.) (old|\d+)""")
-fun parseOperation(s : String) : (Item) -> Item {
-    return OPERATION.matchEntire(s)?.destructured?.let {(op, arg) ->
+fun parseOperation(s : String) : (Item) -> Item =
+    OPERATION.matchEntire(s)?.destructured?.let {(op, arg) ->
         val argf : (Item) -> Item = when (arg) {
             "old" -> {x -> x}
             else -> arg.toLong().let {n -> {_ -> n}}
@@ -64,7 +64,6 @@ fun parseOperation(s : String) : (Item) -> Item {
         }
         {x -> opf(x, argf(x))}
     } ?: throw RuntimeException("No parse: $s")
-}
 
 val FACTOR = Regex("""Test: divisible by (\d+)""")
 fun parseFactor(s : String) : Long =
@@ -73,11 +72,10 @@ fun parseFactor(s : String) : Long =
     } ?: throw RuntimeException("No parse: $s)")
 
 val COND = Regex("""If (\w+): throw to monkey (\d+)""")
-fun parseCond(cond : String, s : String) : MonkeyIndex {
-    return COND.matchEntire(s)?.destructured?.let {(b, n) ->
+fun parseCond(cond : String, s : String) : MonkeyIndex =
+    COND.matchEntire(s)?.destructured?.let {(b, n) ->
         n.toInt().takeIf {b == cond}
     } ?: throw RuntimeException("No parse: $s")
-}
 
 fun main() {
     val monkeys = readInput(11).chunked(7).map {parseMonkey(it)}
