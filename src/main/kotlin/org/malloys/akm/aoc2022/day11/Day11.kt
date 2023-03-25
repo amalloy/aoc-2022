@@ -2,6 +2,7 @@ package org.malloys.akm.aoc2022.day11
 
 import com.google.common.collect.Comparators
 import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableList.toImmutableList
 import org.malloys.akm.aoc2022.lib.readInput
 import java.util.ArrayDeque
 
@@ -17,19 +18,19 @@ data class Monkey(
     val worryReductionFactor : Long = 3L,
     var itemsHandled : Long = 0
 ) {
-    fun doTurn() : List<Pair<MonkeyIndex, Item>> {
-        val ret = ImmutableList.builder<Pair<MonkeyIndex, Item>>()
-        while (items.isNotEmpty()) {
-            val new = (operation(items.removeFirst()) / worryReductionFactor)
+    fun doTurn() : ImmutableList<Pair<MonkeyIndex, Item>> {
+        return items.stream().map {item ->
+            val new = operation(item) / worryReductionFactor
             val recipient = if (new % factor == 0L) {
                 ifTrue
             } else {
                 ifFalse
             }
-            ret.add(Pair(recipient, new))
-            itemsHandled++
+            Pair(recipient, new)
+        }.collect(toImmutableList()).also {
+            itemsHandled += it.size
+            items.clear()
         }
-        return ret.build()
     }
 }
 
