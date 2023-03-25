@@ -38,13 +38,14 @@ private fun registerInfoByCycle(program : List<Instruction>) : Sequence<Register
 
 fun part1(program : List<Instruction>) : Int =
     registerInfoByCycle(program)
-        .filter {reg -> with(reg) {(cycleNum % 40) == 20}}
+        .filter {reg -> with(reg) {(cycleNum % PIXELS_PER_ROW) == 20}}
         .map {reg -> with(reg) {cycleNum * x}}.sum()
 
+private const val PIXELS_PER_ROW = 40
 fun part2(program : List<Instruction>) =
     registerInfoByCycle(program).map {reg ->
         with(reg) {
-            val columnBeingDrawn = (cycleNum - 1) % 40
+            val columnBeingDrawn = (cycleNum - 1) % PIXELS_PER_ROW
             abs(x - columnBeingDrawn) <= 1
         }
     }.map {
@@ -52,4 +53,4 @@ fun part2(program : List<Instruction>) =
             true -> "#"
             false -> "."
         }
-    }.chunked(40).map {it.joinToString(separator = "")}.joinToString(separator = "\n")
+    }.chunked(PIXELS_PER_ROW).map {it.joinToString(separator = "")}.joinToString(separator = "\n")
