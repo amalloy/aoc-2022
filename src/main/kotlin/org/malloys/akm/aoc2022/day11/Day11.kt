@@ -5,22 +5,23 @@ import com.google.common.collect.ImmutableList
 import org.malloys.akm.aoc2022.lib.readInput
 import java.util.ArrayDeque
 
-typealias Item = Int
+typealias Item = Long
 typealias MonkeyIndex = Int
 
 data class Monkey(
     val items : ArrayDeque<Item>,
     val operation : (Item) -> Item,
-    val factor : Int,
+    val factor : Long,
     val ifTrue : MonkeyIndex,
     val ifFalse : MonkeyIndex,
+    val worryReductionFactor : Long = 3L,
+    var itemsHandled : Long = 0
 ) {
-    var itemsHandled : Int = 0
     fun doTurn() : List<Pair<MonkeyIndex, Item>> {
         val ret = ImmutableList.builder<Pair<MonkeyIndex, Item>>()
         while (items.isNotEmpty()) {
-            val new = operation(items.removeFirst()) / 3
-            val recipient = if (new % factor == 0) {
+            val new = (operation(items.removeFirst()) / worryReductionFactor)
+            val recipient = if (new % factor == 0L) {
                 ifTrue
             } else {
                 ifFalse
@@ -45,7 +46,7 @@ fun parseMonkey(lines : List<String>) : Monkey {
 val ITEMS = Regex("""Starting items: ((?:\d+(?:, )?)+)""")
 fun parseItems(s : String) : ArrayDeque<Item> =
     ITEMS.matchEntire(s)?.destructured?.let {(items) ->
-        items.splitToSequence(", ").map {it.toInt()}.toCollection(ArrayDeque())
+        items.splitToSequence(", ").map {it.toLong()}.toCollection(ArrayDeque())
     } ?: throw RuntimeException("No parse: $s")
 
 val OPERATION = Regex("""Operation: new = old (.) (old|\d+)""")
@@ -53,11 +54,11 @@ fun parseOperation(s : String) : (Item) -> Item {
     return OPERATION.matchEntire(s)?.destructured?.let {(op, arg) ->
         val argf : (Item) -> Item = when (arg) {
             "old" -> {x -> x}
-            else -> arg.toInt().let {n -> {_ -> n}}
+            else -> arg.toLong().let {n -> {_ -> n}}
         }
         val opf : (Item, Item) -> Item = when (op) {
-            "+" -> Int::plus
-            "*" -> Int::times
+            "+" -> Item::plus
+            "*" -> Item::times
             else -> throw RuntimeException("No operator $op")
         }
         {x -> opf(x, argf(x))}
@@ -65,9 +66,9 @@ fun parseOperation(s : String) : (Item) -> Item {
 }
 
 val FACTOR = Regex("""Test: divisible by (\d+)""")
-fun parseFactor(s : String) : Int =
+fun parseFactor(s : String) : Long =
     FACTOR.matchEntire(s)?.destructured?.let {(d) ->
-        d.toInt()
+        d.toLong()
     } ?: throw RuntimeException("No parse: $s)")
 
 val COND = Regex("""If (\w+): throw to monkey (\d+)""")
@@ -84,10 +85,11 @@ fun parseIfFalse(s : String) = parseCond("false", s)
 fun main() {
     val monkeys = readInput(11).chunked(7).map {parseMonkey(it)}
     println("Part 1: ${simulateRounds(20, monkeys)}")
+    println("Part 2: ${simulateRounds(10000, monkeys.map {it.copy(worryReductionFactor = 1)})}")
 }
 
-fun simulateRounds(numRounds : Int, initMonkeys : List<Monkey>) : Int {
-    val lcm = initMonkeys.stream().map {it.factor}.reduce(Int::times).orElseThrow()
+fun simulateRounds(numRounds : Int, initMonkeys : List<Monkey>) : Long {
+    val lcm = initMonkeys.stream().map {it.factor}.reduce(Long::times).orElseThrow()
     val monkeys = initMonkeys.map {it.copy(items = it.items.clone())}
     repeat(numRounds) {
         for (monkey in monkeys) {
@@ -96,6 +98,8 @@ fun simulateRounds(numRounds : Int, initMonkeys : List<Monkey>) : Int {
             }
         }
     }
-    return monkeys.stream().map {it.itemsHandled}.collect(Comparators.greatest(2, naturalOrder<Item>()))
-        .reduce(Int::times)
+    return monkeys.stream()
+        .map {it.itemsHandled}
+        .collect(Comparators.greatest(2, naturalOrder<Long>()))
+        .reduce(Long::times)
 }
