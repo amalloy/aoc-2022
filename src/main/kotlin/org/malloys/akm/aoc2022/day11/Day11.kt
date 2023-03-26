@@ -36,11 +36,11 @@ data class Monkey(
 
 fun parseMonkey(lines : List<String>) : Monkey {
     return Monkey(
-        parseItems(lines[1].trimIndent()),
-        parseOperation(lines[2].trimIndent()),
-        parseFactor(lines[3].trimIndent()),
-        parseCond("true", lines[4].trimIndent()),
-        parseCond("false", lines[5].trimIndent()),
+        items = parseItems(lines[1].trimIndent()),
+        operation = parseOperation(lines[2].trimIndent()),
+        factor = parseFactor(lines[3].trimIndent()),
+        ifTrue = parseCond("true", lines[4].trimIndent()),
+        ifFalse = parseCond("false", lines[5].trimIndent()),
     )
 }
 
